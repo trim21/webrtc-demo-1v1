@@ -1,10 +1,9 @@
-FROM golang:1.16
+FROM golang:1.19
 WORKDIR /app
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
-COPY rtc-server .
-RUN go build -o /rtc-signal-server
-EXPOSE 8080
-CMD [ "/rtc-signal-server" ]
+ENV CGO_ENABLED=0
 
+COPY . /src
+
+RUN go build -o /rtc-signal-server
+EXPOSE 8085
+CMD [ "/rtc-signal-server" ]

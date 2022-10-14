@@ -1,6 +1,6 @@
 module github.com/webrtc-demo-1v1
 
-go 1.16
+go 1.19
 
 require (
 	github.com/gofrs/uuid v4.3.0+incompatible // indirect
