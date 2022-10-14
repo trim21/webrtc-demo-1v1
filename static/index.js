@@ -17,7 +17,7 @@ var localStreamObject;
 
 /////////////////////////////////////////////////////////////socket event bind.///////////////////////////////////////////////////////////////////////////////
 // socket connect
-var socket = io('http://公网ip:8080/socket.io');
+var socket = io('http://127.0.0.1:8085/socket.io');
 
 if (roomNumber !== '') {
     console.log("join room :", userName, roomNumber)
