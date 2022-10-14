@@ -7,8 +7,6 @@ COPY . /app/
 
 RUN go build -o /app/rtc-signal-server
 
-EXPOSE 8085
-
 CMD [ "/app/rtc-signal-server" ]
 
 
