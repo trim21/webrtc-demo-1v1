@@ -18,7 +18,7 @@ type UserRoomInfo struct {
 // LiveServer 直播服务
 type LiveServer struct {
 	server       *socketIO.Server
-	port         string
+	address      string
 	httpNSpace   string
 	serverNSpace string
 
@@ -27,22 +27,23 @@ type LiveServer struct {
 
 func BuildLiveServer() *LiveServer {
 	liveServer := &LiveServer{}
-	liveServer.port = "127.0.0.1:8085"
+	liveServer.address = "127.0.0.1:8085"
 	liveServer.httpNSpace = "/socket.io/"
 	liveServer.serverNSpace = "/socket.io"
-	liveServer.e = echo.New()
 
-	liveServer.e.Group("/socket.io").Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+	return liveServer
+}
+
+func (l *LiveServer) setupEcho() {
+	l.e = echo.New()
+	l.e.Group("/socket.io").Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			liveServer.server.ServeHTTP(c.Response(), c.Request())
+			l.server.ServeHTTP(c.Response(), c.Request())
 			return nil
 		}
 	})
-
-	liveServer.e.Static("/node_modules/", "./node_modules/")
-	liveServer.e.Static("/", "./static/")
-
-	return liveServer
+	l.e.Static("/node_modules/", "./node_modules/")
+	l.e.Static("/", "./static/")
 }
 
 func (l *LiveServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -73,15 +74,11 @@ func (l *LiveServer) StartHost() {
 	go l.server.Serve()
 	defer l.server.Close()
 
-	// http.Handle(l.httpNSpace, l)
-	// http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(l.staticPath))))
+	l.setupEcho()
 
-	fmt.Printf("serving ok.port:%s", l.port)
+	fmt.Printf("serving ok.address:%s", l.address)
 
-	err := http.ListenAndServe(l.port, l.e)
-	if err != nil {
-		fmt.Printf("listen err. %v", err)
-	}
+	l.e.Logger.Fatal(l.e.Start(l.address))
 }
 
 // 加入房间
